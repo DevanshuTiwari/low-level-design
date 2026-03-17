@@ -4,6 +4,7 @@ import com.lowleveldesign.ticket_booking.enums.ShowSeatStatus;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Version;
 
 import java.math.BigDecimal;
 
@@ -19,6 +20,9 @@ public class ShowSeat {
 
     @ManyToOne(fetch = FetchType.LAZY)
     Booking booking;
+
+    @Version
+    Long version;
 
     ShowSeatStatus showSeatStatus;
     BigDecimal ticketPrice;
