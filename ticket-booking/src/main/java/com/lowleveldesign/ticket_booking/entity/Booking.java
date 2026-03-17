@@ -5,11 +5,16 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
+@Getter
+@Setter
 public class Booking {
     Long id;
 
@@ -23,6 +28,6 @@ public class Booking {
     List<ShowSeat> seats;
 
     BookingStatus bookingStatus;
-
+    BigDecimal totalAmount;
     LocalDateTime bookingTime;
 }
