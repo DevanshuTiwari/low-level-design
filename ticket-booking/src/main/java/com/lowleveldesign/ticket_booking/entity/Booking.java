@@ -1,6 +1,7 @@
 package com.lowleveldesign.ticket_booking.entity;
 
 import com.lowleveldesign.ticket_booking.enums.BookingStatus;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -18,7 +19,7 @@ public class Booking {
     @ManyToOne
     Show show;
 
-    @OneToMany
+    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
     List<ShowSeat> seats;
 
     BookingStatus bookingStatus;
