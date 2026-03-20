@@ -1,12 +1,14 @@
 package com.lowleveldesign.ticket_booking.service;
 
 import com.lowleveldesign.ticket_booking.entity.Booking;
+import com.lowleveldesign.ticket_booking.entity.Seat;
 import com.lowleveldesign.ticket_booking.entity.ShowSeat;
 import com.lowleveldesign.ticket_booking.enums.BookingStatus;
 import com.lowleveldesign.ticket_booking.enums.ShowSeatStatus;
 import com.lowleveldesign.ticket_booking.repository.BookingRepository;
 import com.lowleveldesign.ticket_booking.repository.ShowSeatRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -59,5 +61,28 @@ public class BookingServiceImpl implements BookingService {
         booking.setSeats(seats);
 
         return bookingRepository.save(booking);
+    }
+
+    @Scheduled(fixedRate = 60000)
+    @Transactional
+    public void releaseExpiredBookings() {
+        LocalDateTime tenMinutesTime = LocalDateTime.now().minusMinutes(10);
+        List<Booking> expiredBookings = bookingRepository.findBookingByStatusAndCreatedAt(BookingStatus.PENDING, tenMinutesTime);
+
+        if (expiredBookings.isEmpty()) {
+            return;
+        }
+
+        for (Booking booking : expiredBookings) {
+            booking.setBookingStatus(BookingStatus.FAILED);
+
+            for (ShowSeat seat : booking.getSeats()) {
+                seat.setShowSeatStatus(ShowSeatStatus.AVAILABLE);
+                seat.setBooking(null); // failed booking
+            }
+        }
+
+        bookingRepository.saveAll(expiredBookings);
+
     }
 }
